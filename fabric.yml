@@ -3,13 +3,6 @@ bundle:
   version: "1.0.0"
   description: "Contoso Analytics — medallion lakehouse with CI/CD"
 
-variables:
-  capacity_id:
-    description: "Fabric capacity GUID"
-  source_connection:
-    description: "Source database connection string"
-    default: ""
-
 resources:
   # ---------------------------------------------------------------------------
   # Spark Environment
@@ -20,7 +13,6 @@ resources:
       libraries:
         - semantic-link-labs
         - delta-spark
-        - great-expectations
 
   # ---------------------------------------------------------------------------
   # Lakehouses
@@ -47,8 +39,6 @@ resources:
       description: "Ingest raw data from sources into bronze lakehouse"
       environment: spark_env
       default_lakehouse: bronze
-      parameters:
-        source_path: "/mnt/raw"
 
     bronze_to_silver:
       path: ./notebooks/bronze_to_silver.py
@@ -74,10 +64,6 @@ resources:
   pipelines:
     daily_etl:
       description: "Daily ETL: ingest → clean → aggregate"
-      schedule:
-        cron: "0 6 * * *"
-        timezone: America/Chicago
-        enabled: true
       activities:
         - name: ingest
           notebook: ingest_to_bronze
@@ -100,8 +86,6 @@ resources:
   warehouses:
     analytics_warehouse:
       description: "SQL views over gold lakehouse"
-      sql_scripts:
-        - ./sql/create_views.sql
 
   # ---------------------------------------------------------------------------
   # Data Agent
@@ -113,30 +97,6 @@ resources:
         - gold
         - analytics_warehouse
       instructions: ./agent/instructions.md
-      few_shot_examples: ./agent/examples.yaml
-
-# ---------------------------------------------------------------------------
-# Security
-# ---------------------------------------------------------------------------
-security:
-  roles:
-    - name: data_engineers
-      entra_group: "${var.eng_group_id}"
-      workspace_role: contributor
-    - name: analysts
-      entra_group: "${var.analyst_group_id}"
-      workspace_role: viewer
-      onelake_roles:
-        - tables: ["*"]
-          permissions: [read]
-
-# ---------------------------------------------------------------------------
-# Policies
-# ---------------------------------------------------------------------------
-policies:
-  require_description: true
-  naming_convention: snake_case
-  max_notebook_size_kb: 500
 
 # ---------------------------------------------------------------------------
 # Targets
@@ -146,32 +106,14 @@ targets:
     default: true
     workspace:
       name: contoso-analytics-dev
-      capacity_id: "${var.capacity_id}"
-    variables:
-      source_connection: "${secret.DEV_SOURCE_CONNECTION}"
-      eng_group_id: "00000000-0000-0000-0000-000000000000"
-      analyst_group_id: "00000000-0000-0000-0000-000000000000"
+      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
 
   test:
     workspace:
       name: contoso-analytics-test
-      capacity_id: "${var.capacity_id}"
-    variables:
-      source_connection: "${secret.TEST_SOURCE_CONNECTION}"
-      eng_group_id: "00000000-0000-0000-0000-000000000000"
-      analyst_group_id: "00000000-0000-0000-0000-000000000000"
-    post_deploy:
-      - run: data_quality_checks
-        expect: success
-        timeout: 600
+      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
 
   prod:
     workspace:
       name: contoso-analytics-prod
-      capacity_id: "${var.capacity_id}"
-    run_as:
-      service_principal: sp-fabric-prod
-    variables:
-      source_connection: "${secret.PROD_SOURCE_CONNECTION}"
-      eng_group_id: "00000000-0000-0000-0000-000000000000"
-      analyst_group_id: "00000000-0000-0000-0000-000000000000"
+      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
