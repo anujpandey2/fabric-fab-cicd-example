@@ -117,3 +117,4 @@ targets:
     workspace:
       name: contoso-analytics-prod
       capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
+
