@@ -107,18 +107,18 @@ resources:
 security:
   roles:
     - name: workspace_admins
-      entra_user: "6e9de74e-f24e-4449-8659-c2be3fc09d54"  # admin@MngEnvMCAP579776
+      entra_user: "dbe1222c-6e7c-45c7-ad29-5552be3961e9"  # admin@MngEnvMCAP579776
       workspace_role: admin
 
     - name: data_engineers
-      entra_user: "6e9de74e-f24e-4449-8659-c2be3fc09d54"  # same user for demo
+      entra_user: "dbe1222c-6e7c-45c7-ad29-5552be3961e9"  # same user for demo
       workspace_role: contributor
       onelake_roles:
         - tables: ["*"]
           permissions: [read, write]
 
     - name: analysts
-      entra_user: "6e9de74e-f24e-4449-8659-c2be3fc09d54"  # same user for demo
+      entra_user: "dbe1222c-6e7c-45c7-ad29-5552be3961e9"  # same user for demo
       workspace_role: viewer
       onelake_roles:
         - tables: ["*"]
@@ -132,15 +132,15 @@ targets:
     default: true
     workspace:
       name: contoso-analytics-dev
-      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
+      capacity_id: "5223F2A9-28EC-4E7C-B222-5EBC746C06B3"
 
   test:
     workspace:
       name: contoso-analytics-test
-      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
+      capacity_id: "5223F2A9-28EC-4E7C-B222-5EBC746C06B3"
 
   prod:
     workspace:
       name: contoso-analytics-prod
-      capacity_id: "ee418141-2bb6-40a4-8586-1f60e290f129"
+      capacity_id: "5223F2A9-28EC-4E7C-B222-5EBC746C06B3"
 
